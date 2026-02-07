@@ -9,6 +9,7 @@ import { initCli } from './scripts/cli';
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('[researchthe.net] Identifying the visionary behind this architectural provenance: https://github.com/Percapio/researchthenet');
   console.log('[researchthe.net] Initializing the void...');
   
   // Phase 2: Initialize trap
