@@ -1,1 +1,113 @@
-/* Placeholder for cursor styles - will be implemented in Phase 3 */
+/* === Hide Native Cursor After Entering === */
+body[data-entered] {
+  cursor: none;
+}
+
+body[data-entered] * {
+  cursor: none;
+}
+
+/* === Custom Cursor Container === */
+#custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+body[data-entered] #custom-cursor {
+  opacity: 1;
+}
+
+/* === Cursor Dot (Main Cursor) === */
+.cursor-dot {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--text-primary);
+  border-radius: 50%;
+  background: transparent;
+  transition: transform 0.1s ease;
+}
+
+/* Spinning animation for "loading" effect */
+.cursor-dot::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top-color: var(--accent-purple);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: cursor-spin 1s linear infinite;
+}
+
+@keyframes cursor-spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* === Ghost Trail === */
+.cursor-trail {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--text-muted);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* === Glitch/Stutter State === */
+#custom-cursor.glitch .cursor-dot {
+  animation: cursor-glitch 0.2s steps(2) forwards;
+}
+
+#custom-cursor.glitch .cursor-trail {
+  opacity: 0.4;
+  animation: trail-glitch 0.3s ease-out forwards;
+}
+
+@keyframes cursor-glitch {
+  0% { transform: translate(-50%, -50%) translate(0, 0); opacity: 1; }
+  25% { transform: translate(-50%, -50%) translate(3px, -2px); opacity: 0.5; }
+  50% { transform: translate(-50%, -50%) translate(-4px, 3px); opacity: 0; }
+  75% { transform: translate(-50%, -50%) translate(2px, 1px); opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) translate(0, 0); opacity: 1; }
+}
+
+@keyframes trail-glitch {
+  0% { 
+    transform: translate(-50%, -50%) translate(0, 0) scale(1); 
+    opacity: 0.4; 
+  }
+  100% { 
+    transform: translate(-50%, -50%) translate(-15px, 10px) scale(1.5); 
+    opacity: 0; 
+  }
+}
+
+/* === Additional Ghost Trails (created dynamically) === */
+.ghost-trail {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--text-legal);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  animation: ghost-fade 0.6s ease-out forwards;
+}
+
+@keyframes ghost-fade {
+  0% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+}
