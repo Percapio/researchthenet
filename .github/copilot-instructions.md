@@ -106,6 +106,10 @@ body {
 }
 
 /* === Typography === */
+#facade {
+    row-gap: 1rem;
+}
+
 h1 {
   font-size: clamp(2rem, 5vw, 4rem);
   font-weight: 300;
@@ -217,12 +221,12 @@ body[data-entered] #legal-blurb {
   </div>
 
   <!-- Main Facade -->
-  <main class="facade">
+  <main id="facade" class="facade">
     <h1>Decoding the Non-Trivial.</h1>
-    <p class="sub-headline">
-      Solving problems that don't exist yet, using methods we haven't quite justified. 
-      We appreciate your patience; our servers are currently debating the ethics of their own existence.
-    </p>
+    <p class="sub-headline">Solving problems that don't exist yet,</p>
+    <p class="sub-headline">using methods we haven't quite justified.</p>
+    <p class="sub-headline">We appreciate your patience;</p>
+    <p class="sub-headline">our servers are currently debating the ethics of their own existence.</p>
     <button id="enter-btn">Enter</button>
   </main>
 
@@ -470,7 +474,7 @@ body[data-entered] #custom-cursor {
   border-radius: 50%;
   pointer-events: none;
   z-index: 9998;
-  animation: ghost-fade 0.6s ease-out forwards;
+  animation: ghost-fade 1.5s ease-out forwards;
 }
 
 @keyframes ghost-fade {
@@ -493,18 +497,17 @@ import { TRAP_ENTERED_EVENT } from './trap';
 let cursorX = 0;
 let cursorY = 0;
 let isActive = false;
-let glitchInterval: number | null = null;
+
 
 // DOM references
 let cursorEl: HTMLElement | null = null;
-let trailEl: HTMLElement | null = null;
+
 
 /**
  * Initialize the custom cursor system.
  */
 export function initCursor(): void {
   cursorEl = document.getElementById('custom-cursor');
-  trailEl = cursorEl?.querySelector('.cursor-trail') || null;
 
   if (!cursorEl) {
     console.error('[cursor] Custom cursor element not found');
@@ -551,12 +554,12 @@ function activate(): void {
  */
 function scheduleNextGlitch(): void {
   const baseDelay = 5000;
-  const variance = Math.random() * 2000 - 1000; // -1s to +1s
+  const variance = Math.random() * 3000 - 1000; // -1s to +1s
   const delay = baseDelay + variance;
 
   glitchInterval = window.setTimeout(() => {
     triggerGlitch();
-    scheduleNextGlitch(); // Schedule the next one
+    scheduleNextGlitch(); // Recursively schedule the next one
   }, delay);
 }
 
@@ -588,6 +591,7 @@ function triggerGlitch(): void {
 function createGhostTrail(x: number, y: number): void {
   const ghost = document.createElement('div');
   ghost.className = 'ghost-trail';
+  ghost.style.position = 'fixed';
   ghost.style.left = `${x}px`;
   ghost.style.top = `${y}px`;
   document.body.appendChild(ghost);
@@ -707,7 +711,7 @@ document.addEventListener('DOMContentLoaded', () => {
  * CLI text stream simulation.
  */
 
-import { TRAP_ENTERED_EVENT, state } from './trap';
+import { TRAP_ENTERED_EVENT } from './trap';
 
 // Pseudo-technical nonsense messages
 const MESSAGES: string[] = [

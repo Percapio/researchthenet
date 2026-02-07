@@ -3,7 +3,7 @@
  * CLI text stream simulation.
  */
 
-import { TRAP_ENTERED_EVENT, state } from './trap';
+import { TRAP_ENTERED_EVENT } from './trap';
 
 // Pseudo-technical nonsense messages
 const MESSAGES: string[] = [

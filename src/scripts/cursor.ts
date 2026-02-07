@@ -9,18 +9,16 @@ import { TRAP_ENTERED_EVENT } from './trap';
 let cursorX = 0;
 let cursorY = 0;
 let isActive = false;
-let glitchInterval: number | null = null;
 
 // DOM references
 let cursorEl: HTMLElement | null = null;
-let trailEl: HTMLElement | null = null;
+
 
 /**
  * Initialize the custom cursor system.
  */
 export function initCursor(): void {
   cursorEl = document.getElementById('custom-cursor');
-  trailEl = cursorEl?.querySelector('.cursor-trail') || null;
 
   if (!cursorEl) {
     console.error('[cursor] Custom cursor element not found');
@@ -29,6 +27,10 @@ export function initCursor(): void {
 
   // Always track mouse position
   document.addEventListener('mousemove', handleMouseMove);
+
+  // Touch events for mobile - track position and trigger glitch on tap
+  document.addEventListener('touchstart', handleTouchStart, { passive: true });
+  document.addEventListener('touchmove', handleTouchMove, { passive: true });
 
   // Activate effects when trap is entered
   document.addEventListener(TRAP_ENTERED_EVENT, activate);
@@ -43,6 +45,41 @@ function handleMouseMove(e: MouseEvent): void {
 
   if (cursorEl) {
     cursorEl.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+  }
+}
+
+/**
+ * Handle touch start - update position and trigger glitch.
+ */
+function handleTouchStart(e: TouchEvent): void {
+  if (e.touches.length > 0) {
+    const touch = e.touches[0];
+    cursorX = touch.clientX;
+    cursorY = touch.clientY;
+
+    if (cursorEl) {
+      cursorEl.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+    }
+
+    // Trigger glitch on tap if active
+    if (isActive) {
+      triggerGlitch();
+    }
+  }
+}
+
+/**
+ * Handle touch move - track position.
+ */
+function handleTouchMove(e: TouchEvent): void {
+  if (e.touches.length > 0) {
+    const touch = e.touches[0];
+    cursorX = touch.clientX;
+    cursorY = touch.clientY;
+
+    if (cursorEl) {
+      cursorEl.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+    }
   }
 }
 
@@ -67,12 +104,12 @@ function activate(): void {
  */
 function scheduleNextGlitch(): void {
   const baseDelay = 5000;
-  const variance = Math.random() * 2000 - 1000; // -1s to +1s
+  const variance = Math.random() * 3000 - 1000; // -1s to +1s
   const delay = baseDelay + variance;
 
-  glitchInterval = window.setTimeout(() => {
+  window.setTimeout(() => {
     triggerGlitch();
-    scheduleNextGlitch(); // Schedule the next one
+    scheduleNextGlitch(); // Recursively schedule the next one
   }, delay);
 }
 
@@ -104,6 +141,7 @@ function triggerGlitch(): void {
 function createGhostTrail(x: number, y: number): void {
   const ghost = document.createElement('div');
   ghost.className = 'ghost-trail';
+  ghost.style.position = 'fixed';
   ghost.style.left = `${x}px`;
   ghost.style.top = `${y}px`;
   document.body.appendChild(ghost);
